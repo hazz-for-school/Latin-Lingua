@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lingua — Latin Mastery</title>
+
+<!-- PWA / iOS home screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lingua">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c9a84c">
+
+<!-- Inline manifest as data URI so it works from a single file -->
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Lingua%20%E2%80%93%20Latin%20Mastery%22%2C%22short_name%22%3A%22Lingua%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e0c0a%22%2C%22theme_color%22%3A%22%23c9a84c%22%7D">
+
+<!-- iOS splash / icon (SVG inline as data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%230e0c0a'/%3E%3Ctext x='90' y='128' font-size='110' text-anchor='middle' fill='%23c9a84c' font-family='Georgia%2C serif'%3EL%3C/text%3E%3C/svg%3E">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0e0c0a;
+  --surface: #161310;
+  --card: #1c1814;
+  --border: #2e2820;
+  --border-light: #3d3428;
+  --gold: #c9a84c;
+  --gold-dim: #8a6e2f;
+  --gold-bright: #e8c96e;
+  --cream: #f0e6cc;
+  --parchment: #d4c4a0;
+  --muted: #7a6a50;
+  --red-latin: #c0543a;
+  --green-latin: #5a8a5a;
+  --blue-latin: #4a7a9b;
+  --text: #e8dcc8;
+  --text-dim: #a09070;
+  --box1: #c0543a;
+  --box2: #c07030;
+  --box3: #c0a030;
+  --box4: #5a8a5a;
+  --box5: #4a7a9b;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  font-size: 18px;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.06) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  -webkit-text-size-adjust: 100%;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 16px 100px;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── HEADER ── */
+.site-header {
+  text-align: center;
+  padding: 28px 0 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+  position: relative;
+}
+.site-header::before, .site-header::after {
+  content: '✦';
+  position: absolute;
+  top: 50%; transform: translateY(-60%);
+  color: var(--gold-dim); font-size: 12px;
+}
+.site-header::before { left: 0; }
+.site-header::after { right: 0; }
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  color: var(--gold);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.logo-sub {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+
+/* ── NAV ── */
+.nav-tabs {
+  display: flex; gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px;
+  margin-bottom: 24px;
+}
+.nav-tab {
+  flex: 1; padding: 9px 10px;
+  border: none; background: transparent;
+  color: var(--muted);
+  font-family: 'Crimson Pro', serif;
+  font-size: 14px; letter-spacing: 1px;
+  cursor: pointer; border-radius: 4px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.nav-tab.active { background: var(--card); color: var(--gold); border: 1px solid var(--border-light); }
+.nav-tab:hover:not(.active) { color: var(--text-dim); }
+
+/* ── BOXES GRID ── */
+.boxes-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.box-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.box-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; border-radius: 8px 8px 0 0;
+}
+.box-card[data-box="1"]::before { background: var(--box1); }
+.box-card[data-box="2"]::before { background: var(--box2); }
+.box-card[data-box="3"]::before { background: var(--box3); }
+.box-card[data-box="4"]::before { background: var(--box4); }
+.box-card[data-box="5"]::before { background: var(--box5); }
+.box-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+.box-card.selected { border-color: var(--gold-dim); background: #201c16; }
+.box-label { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+.box-card[data-box="1"] .box-label { color: var(--box1); }
+.box-card[data-box="2"] .box-label { color: var(--box2); }
+.box-card[data-box="3"] .box-label { color: var(--box3); }
+.box-card[data-box="4"] .box-label { color: var(--box4); }
+.box-card[data-box="5"] .box-label { color: var(--box5); }
+.box-name { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.box-count { font-family: 'JetBrains Mono', monospace; font-size: 18px; color: var(--text); margin-bottom: 2px; }
+.box-count-label { font-size: 10px; color: var(--muted); }
+.box-due-badge {
+  display: inline-block; margin-top: 7px;
+  padding: 2px 7px; border-radius: 10px;
+  font-size: 10px; font-family: 'JetBrains Mono', monospace;
+}
+.box-due-badge.due-now { background: rgba(192,84,58,0.2); color: var(--box1); border: 1px solid rgba(192,84,58,0.3); }
+.box-due-badge.due-soon { background: rgba(192,160,48,0.15); color: var(--box3); border: 1px solid rgba(192,160,48,0.25); }
+.box-due-badge.due-later { background: rgba(90,138,90,0.15); color: var(--green-latin); border: 1px solid rgba(90,138,90,0.25); }
+
+/* ── CONTROLS ── */
+.study-controls {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+.study-mode-select, .filter-select {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--text); font-family: 'Crimson Pro', serif;
+  font-size: 15px; padding: 9px 12px; border-radius: 6px;
+  cursor: pointer; appearance: none;
+}
+.study-mode-select { flex: 1; min-width: 200px; }
+.btn-primary {
+  background: var(--gold); color: var(--bg);
+  border: none; padding: 10px 24px;
+  font-family: 'Playfair Display', serif; font-size: 15px;
+  letter-spacing: 2px; text-transform: uppercase;
+  border-radius: 6px; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-primary:hover { background: var(--gold-bright); transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: transparent; border: 1px solid var(--border-light);
+  color: var(--text-dim); padding: 9px 18px;
+  font-family: 'Crimson Pro', serif; font-size: 14px;
+  border-radius: 6px; cursor: pointer; transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold-dim); color: var(--text); }
+
+/* ── SCHEDULE ── */
+.schedule-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 18px; margin-bottom: 18px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif; font-size: 13px;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold-dim); margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.schedule-rows { display: flex; flex-direction: column; gap: 8px; }
+.schedule-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px; background: var(--card);
+  border-radius: 6px; border: 1px solid var(--border);
+}
+.schedule-row .box-indicator {
+  width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 10px; flex-shrink: 0;
+}
+.schedule-row-left { display: flex; align-items: center; gap: 8px; }
+.schedule-box-name { font-family: 'Playfair Display', serif; font-size: 15px; }
+.schedule-interval { font-size: 12px; color: var(--muted); font-style: italic; }
+.schedule-next-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); text-align: right; }
+.schedule-next-date .countdown { font-size: 10px; display: block; color: var(--muted); }
+
+/* ── MASTERY BAR ── */
+.mastery-bar-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;
+}
+.mastery-label {
+  display: flex; justify-content: space-between;
+  margin-bottom: 8px; font-size: 12px; color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.mastery-bar {
+  height: 7px; background: var(--border);
+  border-radius: 4px; overflow: hidden; display: flex; gap: 2px;
+}
+.mastery-segment { height: 100%; transition: width 0.6s ease; border-radius: 2px; }
+
+/* ── STUDY TOP BAR ── */
+.study-top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.study-progress-label { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+.study-session-stats { display: flex; gap: 14px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.stat-correct { color: var(--green-latin); }
+.stat-wrong { color: var(--red-latin); }
+.study-progress-bar-wrap { background: var(--border); height: 3px; border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+.study-progress-bar-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+
+/* ── FLASHCARD ── */
+.flashcard-wrap { perspective: 1200px; margin-bottom: 20px; }
+.flashcard {
+  width: 100%; min-height: 200px;
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  background: var(--card); border: 1px solid var(--border-light);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px; text-align: center;
+}
+.card-face.back { transform: rotateY(180deg); background: #1a1710; border-color: var(--gold-dim); }
+.card-face::after {
+  content: ''; position: absolute; inset: 0; border-radius: 12px;
+  background: radial-gradient(ellipse at 30% 30%, rgba(201,168,76,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.card-latin {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 38px; color: var(--gold); margin-bottom: 6px;
+}
+.card-part-of-speech { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.card-hint { font-size: 14px; color: var(--text-dim); font-style: italic; }
+.card-flip-hint { position: absolute; bottom: 14px; right: 18px; font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.card-translation { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--cream); margin-bottom: 8px; }
+.card-extra { font-size: 14px; color: var(--text-dim); font-style: italic; max-width: 480px; }
+.card-box-indicator { position: absolute; top: 14px; left: 18px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+
+/* ── ANSWER BUTTONS ── */
+.answer-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.btn-wrong {
+  padding: 14px; background: rgba(192,84,58,0.12);
+  border: 1px solid rgba(192,84,58,0.3); color: #e87060;
+  font-family: 'Crimson Pro', serif; font-size: 16px;
+  border-radius: 8px; cursor: pointer; transition: all 0.15s;
+}
+.btn-wrong:hover { background: rgba(192,84,58,0.22); }
+.btn-correct {
+  padding: 14px; background: rgba(90,138,90,0.12);
+  border: 1px solid rgba(90,138,90,0.3); color: #80c080;
+  font-family: 'Crimson Pro', serif; font-size: 16px;
+  border-radius: 8px; cursor: pointer; transition: all 0.15s;
+}
+.btn-correct:hover { background: rgba(90,138,90,0.22); }
+.flip-prompt { text-align: center; font-size: 14px; color: var(--muted); font-style: italic; padding: 8px; }
+
+/* ── MC ── */
+.mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.mc-option {
+  padding: 12px 14px; background: var(--card);
+  border: 1px solid var(--border-light); color: var(--text);
+  font-family: 'Crimson Pro', serif; font-size: 16px;
+  border-radius: 8px; cursor: pointer; text-align: left;
+  transition: all 0.15s;
+}
+.mc-option:hover { border-color: var(--gold-dim); background: #201c16; }
+.mc-option.correct { background: rgba(90,138,90,0.18); border-color: var(--green-latin); color: #80c080; }
+.mc-option.wrong { background: rgba(192,84,58,0.15); border-color: var(--red-latin); color: #e87060; }
+
+/* ── COMPLETE ── */
+#complete-screen { text-align: center; padding: 36px 20px; }
+.complete-title { font-family: 'Playfair Display', serif; font-size: 44px; color: var(--gold); margin-bottom: 6px; }
+.complete-latin { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 18px; color: var(--muted); margin-bottom: 36px; }
+.complete-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.complete-stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 18px; }
+.complete-stat-num { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); }
+.complete-stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+.complete-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ── BROWSE ── */
+#browse-screen .browse-controls { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.search-input {
+  flex: 1; min-width: 180px; background: var(--card);
+  border: 1px solid var(--border); color: var(--text);
+  font-family: 'Crimson Pro', serif; font-size: 16px;
+  padding: 9px 12px; border-radius: 6px;
+}
+.search-input:focus { outline: none; border-color: var(--gold-dim); }
+.search-input::placeholder { color: var(--muted); }
+.word-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.word-table th {
+  text-align: left; padding: 9px 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.word-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.word-table tr:hover td { background: var(--surface); }
+.word-latin-cell { font-family: 'Playfair Display', serif; font-style: italic; font-size: 16px; color: var(--gold); }
+.word-english-cell { color: var(--cream); }
+.word-pos-cell { font-size: 12px; color: var(--muted); }
+.box-pip { display: inline-block; width: 9px; height: 9px; border-radius: 50%; vertical-align: middle; margin-right: 5px; }
+.reset-word-btn {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  padding: 2px 7px; font-size: 11px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+}
+.reset-word-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+
+/* ── INSTALL BANNER ── */
+.install-banner {
+  background: var(--card); border: 1px solid var(--gold-dim);
+  border-radius: 8px; padding: 14px 16px;
+  margin-bottom: 20px; display: flex;
+  align-items: flex-start; gap: 12px;
+}
+.install-banner-icon { font-size: 22px; flex-shrink: 0; }
+.install-banner-text { flex: 1; }
+.install-banner-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--gold); margin-bottom: 3px; }
+.install-banner-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.install-banner-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+/* ── UTILS ── */
+.ornament { text-align: center; color: var(--gold-dim); font-size: 13px; letter-spacing: 8px; margin: 18px 0; }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--muted); font-style: italic; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.32s ease forwards; }
+@keyframes flashGreen {
+  0%,100% { box-shadow: none; }
+  50% { box-shadow: 0 0 28px rgba(90,138,90,0.4); }
+}
+@keyframes flashRed {
+  0%,100% { box-shadow: none; }
+  50% { box-shadow: 0 0 28px rgba(192,84,58,0.4); }
+}
+.flash-correct { animation: flashGreen 0.4s ease; }
+.flash-wrong { animation: flashRed 0.4s ease; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .boxes-grid { grid-template-columns: repeat(5,1fr); gap: 5px; }
+  .box-card { padding: 10px 4px; }
+  .box-label { font-size: 17px; }
+  .box-name { font-size: 9px; }
+  .box-count { font-size: 15px; }
+  .box-due-badge { font-size: 9px; padding: 2px 5px; }
+  .card-latin { font-size: 30px; }
+  .mc-options { grid-template-columns: 1fr; }
+  .word-table th:last-child, .word-table td:last-child { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">Lingua</div>
+    <div class="logo-sub">OCR Latin · Vocabulary Mastery</div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showScreen('home')">Overview</button>
+    <button class="nav-tab" onclick="showScreen('study-screen')">Study</button>
+    <button class="nav-tab" onclick="showScreen('browse-screen')">Browse</button>
+  </nav>
+
+  <!-- ══ HOME ══ -->
+  <div id="home" class="screen active">
+
+    <div id="install-banner" class="install-banner" style="display:none">
+      <div class="install-banner-icon">📱</div>
+      <div class="install-banner-text">
+        <div class="install-banner-title">Add to Home Screen</div>
+        <div class="install-banner-desc">Tap the share button <strong>⎙</strong> then <strong>"Add to Home Screen"</strong> to use Lingua as an app. Your progress saves automatically.</div>
+      </div>
+      <button class="install-banner-close" onclick="dismissInstallBanner()">✕</button>
+    </div>
+
+    <div class="mastery-bar-wrap">
+      <div class="mastery-label"><span>Mastery</span><span id="mastery-pct">0%</span></div>
+      <div class="mastery-bar" id="mastery-bar">
+        <div class="mastery-segment" style="background:var(--box1);width:0%" id="seg1"></div>
+        <div class="mastery-segment" style="background:var(--box2);width:0%" id="seg2"></div>
+        <div class="mastery-segment" style="background:var(--box3);width:0%" id="seg3"></div>
+        <div class="mastery-segment" style="background:var(--box4);width:0%" id="seg4"></div>
+        <div class="mastery-segment" style="background:var(--box5);width:0%" id="seg5"></div>
+      </div>
+    </div>
+
+    <div class="boxes-grid" id="boxes-grid"></div>
+
+    <div class="study-controls">
+      <select class="study-mode-select" id="mode-select">
+        <option value="flashcard">Flashcard — Latin → English</option>
+        <option value="flashcard-rev">Flashcard — English → Latin</option>
+        <option value="mc">Multiple choice — Latin → English</option>
+        <option value="mc-rev">Multiple choice — English → Latin</option>
+      </select>
+      <button class="btn-primary" onclick="startStudy()">Study Now</button>
+      <button class="btn-secondary" onclick="startStudy('all')">All Words</button>
+    </div>
+
+    <div class="schedule-section">
+      <div class="section-title">Review Schedule</div>
+      <div class="schedule-rows" id="schedule-rows"></div>
+    </div>
+
+    <div class="ornament">✦ · · ✦ · · ✦</div>
+
+    <div class="schedule-section">
+      <div class="section-title">Stats</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--gold)" id="stat-total">0</span><br><span style="font-size:12px;color:var(--muted)">Total words</span></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--green-latin)" id="stat-mastered">0</span><br><span style="font-size:12px;color:var(--muted)">Mastered</span></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--box1)" id="stat-due">0</span><br><span style="font-size:12px;color:var(--muted)">Due now</span></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--text-dim)" id="stat-sessions">0</span><br><span style="font-size:12px;color:var(--muted)">Sessions</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STUDY ══ -->
+  <div id="study-screen" class="screen">
+    <div class="study-top-bar">
+      <button class="btn-secondary" style="padding:6px 12px;font-size:13px" onclick="exitStudy()">← Back</button>
+      <div class="study-progress-label" id="study-progress-label">0 / 0</div>
+      <div class="study-session-stats">
+        <span class="stat-correct">✓ <span id="sess-correct">0</span></span>
+        <span class="stat-wrong">✗ <span id="sess-wrong">0</span></span>
+      </div>
+    </div>
+    <div class="study-progress-bar-wrap">
+      <div class="study-progress-bar-fill" id="study-prog-fill" style="width:0%"></div>
+    </div>
+
+    <!-- Flashcard -->
+    <div id="fc-mode">
+      <div class="flashcard-wrap" id="flashcard-wrap">
+        <div class="flashcard" id="flashcard" onclick="flipCard()">
+          <div class="card-face front">
+            <div class="card-box-indicator" id="card-box-ind">Box 1</div>
+            <div class="card-part-of-speech" id="card-pos-front"></div>
+            <div class="card-latin" id="card-front-main"></div>
+            <div class="card-hint" id="card-front-hint"></div>
+            <div class="card-flip-hint">tap to reveal →</div>
+          </div>
+          <div class="card-face back">
+            <div class="card-box-indicator" id="card-box-ind-back">Box 1</div>
+            <div class="card-part-of-speech" id="card-pos-back"></div>
+            <div class="card-translation" id="card-back-main"></div>
+            <div class="card-extra" id="card-back-extra"></div>
+          </div>
+        </div>
+      </div>
+      <div class="answer-buttons" id="answer-btns" style="display:none">
+        <button class="btn-wrong" onclick="answerCard(false)">✗ &nbsp; Didn't know</button>
+        <button class="btn-correct" onclick="answerCard(true)">✓ &nbsp; Got it</button>
+      </div>
+      <div class="flip-prompt" id="flip-prompt">Tap card to reveal translation</div>
+    </div>
+
+    <!-- MC -->
+    <div id="mc-mode" style="display:none">
+      <div style="text-align:center;margin-bottom:20px">
+        <div class="card-part-of-speech" id="mc-pos" style="margin-bottom:6px"></div>
+        <div class="card-latin" id="mc-question" style="font-size:34px"></div>
+      </div>
+      <div class="mc-options" id="mc-options"></div>
+    </div>
+  </div>
+
+  <!-- ══ COMPLETE ══ -->
+  <div id="complete-screen" class="screen">
+    <div class="complete-title" id="complete-heading">Bene factum!</div>
+    <div class="complete-latin" id="complete-subtitle">Session complete</div>
+    <div class="complete-stats">
+      <div class="complete-stat"><div class="complete-stat-num" id="comp-correct">0</div><div class="complete-stat-label">Correct</div></div>
+      <div class="complete-stat"><div class="complete-stat-num" id="comp-wrong">0</div><div class="complete-stat-label">Missed</div></div>
+      <div class="complete-stat"><div class="complete-stat-num" id="comp-pct">0%</div><div class="complete-stat-label">Score</div></div>
+    </div>
+    <div class="complete-actions">
+      <button class="btn-secondary" onclick="showScreen('home');updateHome()">← Overview</button>
+      <button class="btn-primary" onclick="startStudy()">Study Again</button>
+    </div>
+  </div>
+
+  <!-- ══ BROWSE ══ -->
+  <div id="browse-screen" class="screen">
+    <div class="browse-controls">
+      <input class="search-input" id="search-input" placeholder="Search Latin or English…" oninput="renderBrowse()">
+      <select class="filter-select" id="filter-box" onchange="renderBrowse()">
+        <option value="all">All boxes</option>
+        <option value="1">Box 1</option><option value="2">Box 2</option>
+        <option value="3">Box 3</option><option value="4">Box 4</option>
+        <option value="5">Box 5</option>
+      </select>
+      <select class="filter-select" id="filter-pos" onchange="renderBrowse()">
+        <option value="all">All types</option>
+        <option value="verb">Verbs</option><option value="noun">Nouns</option>
+        <option value="adj">Adjectives</option><option value="adv">Adverbs</option>
+        <option value="prep">Prepositions</option><option value="conj">Conjunctions</option>
+        <option value="num">Numbers</option><option value="pron">Pronouns</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <table class="word-table">
+      <thead><tr><th>Latin</th><th>English</th><th>Type</th><th>Box</th><th></th></tr></thead>
+      <tbody id="browse-tbody"></tbody>
+    </table>
+  </div>
+
+</div><!-- .app -->
+
+<script>
+// 449 words — OCR GCSE (9-1) Latin J282/01 Defined Vocabulary List
+const WORDBANK = [
+  {l:'a/ab', f:'+ ablative', pos:'prep', e:'from, away from, by'},
+  {l:'absum', f:'abesse, afui', pos:'verb', e:'be absent, be away, be distant from'},
+  {l:'ac / atque', f:'indecl', pos:'conj', e:'and'},
+  {l:'accido', f:'accidere, accidi', pos:'verb', e:'happen'},
+  {l:'accipio', f:'accipere, accepi, acceptus', pos:'verb', e:'accept, take in, receive'},
+  {l:'ad', f:'+ accusative', pos:'prep', e:'to, towards, at'},
+  {l:'adeo', f:'indecl', pos:'adv', e:'so much, so greatly, to such an extent'},
+  {l:'adsum', f:'adesse, adfui', pos:'verb', e:'be here, be present'},
+  {l:'advenio', f:'advenire, adveni', pos:'verb', e:'arrive'},
+  {l:'aedifico', f:'aedificare, aedificavi, aedificatus', pos:'verb', e:'build'},
+  {l:'ager', f:'agri, m', pos:'noun', e:'field'},
+  {l:'ago', f:'agere, egi, actus', pos:'verb', e:'do, act, drive'},
+  {l:'alii … alii', f:'indecl', pos:'other', e:'some … others'},
+  {l:'alius', f:'alia, aliud', pos:'pron', e:'other, another, else'},
+  {l:'alter', f:'altera, alterum', pos:'pron', e:'the other, another, one of two, the second'},
+  {l:'altus', f:'alta, altum', pos:'adj', e:'high, deep'},
+  {l:'ambulo', f:'ambulare, ambulavi', pos:'verb', e:'walk'},
+  {l:'amicus', f:'amici, m', pos:'noun', e:'friend'},
+  {l:'amo', f:'amare, amavi, amatus', pos:'verb', e:'love, like'},
+  {l:'amor', f:'amoris, m', pos:'noun', e:'love'},
+  {l:'ancilla', f:'ancillae, f', pos:'noun', e:'slave-girl, slave-woman'},
+  {l:'animus', f:'animi, m', pos:'noun', e:'spirit, soul, mind'},
+  {l:'annus', f:'anni, m', pos:'noun', e:'year'},
+  {l:'antea', f:'indecl', pos:'adv', e:'before'},
+  {l:'appropinquo', f:'appropinquare, appropinquavi + dative', pos:'verb', e:'approach, come near to'},
+  {l:'aqua', f:'aquae, f', pos:'noun', e:'water'},
+  {l:'arma', f:'armorum, n pl', pos:'noun', e:'arms, weapons'},
+  {l:'ars', f:'artis, f', pos:'noun', e:'art, skill'},
+  {l:'ascendo', f:'ascendere, ascendi, ascensus', pos:'verb', e:'climb'},
+  {l:'audax', f:'audacis', pos:'adj', e:'bold, daring'},
+  {l:'audeo', f:'audere, ausus sum', pos:'verb', e:'dare'},
+  {l:'audio', f:'audire, audivi, auditus', pos:'verb', e:'hear, listen to'},
+  {l:'aufero', f:'auferre, abstuli, ablatus', pos:'verb', e:'take away, carry off, steal'},
+  {l:'auxilium', f:'auxilii, n', pos:'noun', e:'help'},
+  {l:'bellum', f:'belli, n', pos:'noun', e:'war'},
+  {l:'bene', f:'indecl', pos:'adv', e:'well'},
+  {l:'bibo', f:'bibere, bibi', pos:'verb', e:'drink'},
+  {l:'bonus', f:'bona, bonum', pos:'adj', e:'good'},
+  {l:'brevis', f:'breve', pos:'adj', e:'short, brief'},
+  {l:'cado', f:'cadere, cecidi, casus', pos:'verb', e:'fall'},
+  {l:'caelum', f:'caeli, n', pos:'noun', e:'sky, heaven'},
+  {l:'capio', f:'capere, cepi, captus', pos:'verb', e:'take, catch, capture, make (a plan)'},
+  {l:'captivus', f:'captivi, m', pos:'noun', e:'captive, prisoner'},
+  {l:'caput', f:'capitis, n', pos:'noun', e:'head'},
+  {l:'castra', f:'castrorum, n pl', pos:'noun', e:'camp'},
+  {l:'celer', f:'celeris, celere', pos:'adj', e:'quick, fast'},
+  {l:'celo', f:'celare, celavi, celatus', pos:'verb', e:'hide'},
+  {l:'cena', f:'cenae, f', pos:'noun', e:'dinner, meal'},
+  {l:'ceteri', f:'ceterae, cetera', pos:'adj', e:'the rest, the others'},
+  {l:'cibus', f:'cibi, m', pos:'noun', e:'food'},
+  {l:'circum', f:'+ accusative', pos:'prep', e:'around'},
+  {l:'civis', f:'civis, m/f', pos:'noun', e:'citizen'},
+  {l:'clamo', f:'clamare, clamavi, clamatus', pos:'verb', e:'shout'},
+  {l:'clamor', f:'clamoris, m', pos:'noun', e:'shout, shouting, noise'},
+  {l:'clarus', f:'clara, clarum', pos:'adj', e:'famous, clear'},
+  {l:'coepi', f:'coepisse', pos:'verb', e:'began'},
+  {l:'cogito', f:'cogitare, cogitavi, cogitatus', pos:'verb', e:'think, consider'},
+  {l:'cognosco', f:'cognoscere, cognovi, cognitus', pos:'verb', e:'get to know, find out'},
+  {l:'cogo', f:'cogere, coegi, coactus', pos:'verb', e:'force, compel'},
+  {l:'comes', f:'comitis, m/f', pos:'noun', e:'comrade, companion'},
+  {l:'conficio', f:'conficere, confeci, confectus', pos:'verb', e:'finish, wear out'},
+  {l:'conor', f:'conari, conatus sum', pos:'verb', e:'try'},
+  {l:'consilium', f:'consilii, n', pos:'noun', e:'plan, idea, advice'},
+  {l:'conspicio', f:'conspicere, conspexi, conspectus', pos:'verb', e:'catch sight of, notice'},
+  {l:'constituo', f:'constituere, constitui, constitutus', pos:'verb', e:'decide'},
+  {l:'consul', f:'consulis, m', pos:'noun', e:'consul'},
+  {l:'consumo', f:'consumere, consumpsi, consumptus', pos:'verb', e:'eat'},
+  {l:'contra', f:'+ accusative', pos:'prep', e:'against'},
+  {l:'convenio', f:'convenire, conveni', pos:'verb', e:'come together, gather, meet'},
+  {l:'copiae', f:'copiarum, f pl', pos:'noun', e:'forces, troops'},
+  {l:'corpus', f:'corporis, n', pos:'noun', e:'body'},
+  {l:'cras', f:'indecl', pos:'adv', e:'tomorrow'},
+  {l:'credo', f:'credere, credidi, creditus + dative', pos:'verb', e:'believe, trust'},
+  {l:'crudelis', f:'crudele', pos:'adj', e:'cruel'},
+  {l:'cum', f:'+ ablative', pos:'prep', e:'with'},
+  {l:'cum', f:'indecl', pos:'conj', e:'when, since'},
+  {l:'cupio', f:'cupere, cupivi, cupitus', pos:'verb', e:'want, desire'},
+  {l:'cur?', f:'indecl', pos:'adv', e:'why?'},
+  {l:'cura', f:'curae, f', pos:'noun', e:'care, worry'},
+  {l:'curro', f:'currere, cucurri, cursus', pos:'verb', e:'run'},
+  {l:'custodio', f:'custodire, custodivi, custoditus', pos:'verb', e:'guard'},
+  {l:'custos', f:'custodis, m/f', pos:'noun', e:'guard'},
+  {l:'de', f:'+ ablative', pos:'prep', e:'from, down from, about'},
+  {l:'dea', f:'deae, f', pos:'noun', e:'goddess'},
+  {l:'debeo', f:'debere, debui, debitus', pos:'verb', e:'owe, ought, should, must'},
+  {l:'defendo', f:'defendere, defendi, defensus', pos:'verb', e:'defend'},
+  {l:'deinde', f:'indecl', pos:'adv', e:'then'},
+  {l:'deleo', f:'delere, delevi, deletus', pos:'verb', e:'destroy'},
+  {l:'descendo', f:'descendere, descendi, descensus', pos:'verb', e:'go down, come down'},
+  {l:'deus', f:'dei, m', pos:'noun', e:'god'},
+  {l:'dico', f:'dicere, dixi, dictus', pos:'verb', e:'say, speak, tell'},
+  {l:'dies', f:'diei, m', pos:'noun', e:'day'},
+  {l:'difficilis', f:'difficile', pos:'adj', e:'difficult'},
+  {l:'diligens', f:'diligentis', pos:'adj', e:'careful'},
+  {l:'dirus', f:'dira, dirum', pos:'adj', e:'dreadful'},
+  {l:'discedo', f:'discedere, discessi', pos:'verb', e:'depart, leave'},
+  {l:'diu', f:'indecl', pos:'adv', e:'for a long time'},
+  {l:'do', f:'dare, dedi, datus', pos:'verb', e:'give'},
+  {l:'doceo', f:'docere, docui, doctus', pos:'verb', e:'teach'},
+  {l:'domina', f:'dominae, f', pos:'noun', e:'mistress'},
+  {l:'dominus', f:'domini, m', pos:'noun', e:'master'},
+  {l:'domus', f:'domus, f', pos:'noun', e:'home'},
+  {l:'donum', f:'doni, n', pos:'noun', e:'gift, present'},
+  {l:'dormio', f:'dormire, dormivi', pos:'verb', e:'sleep'},
+  {l:'duco', f:'ducere, duxi, ductus', pos:'verb', e:'lead, take'},
+  {l:'dum', f:'indecl', pos:'conj', e:'while, until'},
+  {l:'dux', f:'ducis, m', pos:'noun', e:'leader'},
+  {l:'e/ex', f:'+ ablative', pos:'prep', e:'from, out of, out'},
+  {l:'ecce!', f:'indecl', pos:'adv', e:'look!'},
+  {l:'effugio', f:'effugere, effugi', pos:'verb', e:'escape'},
+  {l:'ego', f:'mei', pos:'pron', e:'I, me'},
+  {l:'egredior', f:'egredi, egressus sum', pos:'verb', e:'go out'},
+  {l:'emo', f:'emere, emi, emptus', pos:'verb', e:'buy'},
+  {l:'enim', f:'indecl', pos:'conj', e:'for'},
+  {l:'eo', f:'ire, i(v)i', pos:'verb', e:'go'},
+  {l:'epistula', f:'epistulae, f', pos:'noun', e:'letter'},
+  {l:'equus', f:'equi, m', pos:'noun', e:'horse'},
+  {l:'et', f:'indecl', pos:'conj', e:'and, even'},
+  {l:'et…et', f:'indecl', pos:'conj', e:'both … and'},
+  {l:'etiam', f:'indecl', pos:'adv', e:'also, even'},
+  {l:'exercitus', f:'exercitus, m', pos:'noun', e:'army'},
+  {l:'exspecto', f:'exspectare, exspectavi, exspectatus', pos:'verb', e:'wait for, expect'},
+  {l:'facilis', f:'facile', pos:'adj', e:'easy'},
+  {l:'facio', f:'facere, feci, factus', pos:'verb', e:'make, do'},
+  {l:'faveo', f:'favere, favi, fautus + dative', pos:'verb', e:'favour, support'},
+  {l:'felix', f:'felicis', pos:'adj', e:'fortunate, happy'},
+  {l:'femina', f:'feminae, f', pos:'noun', e:'woman'},
+  {l:'fero', f:'ferre, tuli, latus', pos:'verb', e:'bring, carry, bear'},
+  {l:'ferox', f:'ferocis', pos:'adj', e:'fierce, ferocious'},
+  {l:'festino', f:'festinare, festinavi', pos:'verb', e:'hurry'},
+  {l:'fidelis', f:'fidele', pos:'adj', e:'faithful, loyal'},
+  {l:'filia', f:'filiae, f', pos:'noun', e:'daughter'},
+  {l:'filius', f:'filii, m', pos:'noun', e:'son'},
+  {l:'flumen', f:'fluminis, n', pos:'noun', e:'river'},
+  {l:'forte', f:'indecl', pos:'adv', e:'by chance'},
+  {l:'fortis', f:'forte', pos:'adj', e:'brave'},
+  {l:'forum', f:'fori, n', pos:'noun', e:'forum, market place'},
+  {l:'frater', f:'fratris, m', pos:'noun', e:'brother'},
+  {l:'frustra', f:'indecl', pos:'adv', e:'in vain'},
+  {l:'fugio', f:'fugere, fugi', pos:'verb', e:'run away, flee'},
+  {l:'gaudeo', f:'gaudere, gavisus sum', pos:'verb', e:'be pleased, rejoice'},
+  {l:'gaudium', f:'gaudii, n', pos:'noun', e:'joy, pleasure'},
+  {l:'gens', f:'gentis, f', pos:'noun', e:'family, tribe, race, people'},
+  {l:'gero', f:'gerere, gessi, gestus', pos:'verb', e:'wear (clothes), wage (war)'},
+  {l:'gladius', f:'gladii, m', pos:'noun', e:'sword'},
+  {l:'gravis', f:'grave', pos:'adj', e:'heavy, serious'},
+  {l:'habeo', f:'habere, habui, habitus', pos:'verb', e:'have, hold'},
+  {l:'habito', f:'habitare, habitavi, habitatus', pos:'verb', e:'live'},
+  {l:'heri', f:'indecl', pos:'adv', e:'yesterday'},
+  {l:'hic', f:'haec, hoc', pos:'pron', e:'this, he, she, it'},
+  {l:'hodie', f:'indecl', pos:'adv', e:'today'},
+  {l:'homo', f:'hominis, m', pos:'noun', e:'man, human being'},
+  {l:'hora', f:'horae, f', pos:'noun', e:'hour'},
+  {l:'hortor', f:'hortari, hortatus sum', pos:'verb', e:'encourage, urge'},
+  {l:'hortus', f:'horti, m', pos:'noun', e:'garden'},
+  {l:'hostis', f:'hostis, m', pos:'noun', e:'enemy'},
+  {l:'iaceo', f:'iacere, iacui', pos:'verb', e:'lie'},
+  {l:'iacio', f:'iacere, ieci, iactus', pos:'verb', e:'throw'},
+  {l:'iam', f:'indecl', pos:'adv', e:'now, already'},
+  {l:'ianua', f:'ianuae, f', pos:'noun', e:'door'},
+  {l:'ibi', f:'indecl', pos:'adv', e:'there'},
+  {l:'idem', f:'eadem, idem', pos:'pron', e:'the same'},
+  {l:'igitur', f:'indecl', pos:'adv', e:'therefore, and so'},
+  {l:'ille', f:'illa, illud', pos:'pron', e:'that, he, she, it'},
+  {l:'imperator', f:'imperatoris, m', pos:'noun', e:'emperor, general, leader'},
+  {l:'imperium', f:'imperii, n', pos:'noun', e:'empire, power, command'},
+  {l:'impero', f:'imperare, imperavi, imperatus + dative', pos:'verb', e:'order, command'},
+  {l:'in', f:'+ ablative', pos:'prep', e:'in, on'},
+  {l:'in', f:'+ accusative', pos:'prep', e:'into, onto'},
+  {l:'incendo', f:'incendere, incendi, incensus', pos:'verb', e:'burn, set on fire'},
+  {l:'infelix', f:'infelicis', pos:'adj', e:'unlucky, unhappy'},
+  {l:'ingens', f:'ingentis', pos:'adj', e:'huge'},
+  {l:'ingredior', f:'ingredi, ingressus sum', pos:'verb', e:'enter'},
+  {l:'inimicus', f:'inimici, m', pos:'noun', e:'enemy'},
+  {l:'inquit', f:'irreg', pos:'verb', e:'he/she says, he/she said'},
+  {l:'insula', f:'insulae, f', pos:'noun', e:'island, block of flats'},
+  {l:'intellego', f:'intellegere, intellexi, intellectus', pos:'verb', e:'understand, realise'},
+  {l:'inter', f:'+ accusative', pos:'prep', e:'among, between'},
+  {l:'interea', f:'indecl', pos:'adv', e:'meanwhile'},
+  {l:'interficio', f:'interficere, interfeci, interfectus', pos:'verb', e:'kill'},
+  {l:'intro', f:'intrare, intravi, intratus', pos:'verb', e:'enter'},
+  {l:'invenio', f:'invenire, inveni, inventus', pos:'verb', e:'find'},
+  {l:'invito', f:'invitare, invitavi, invitatus', pos:'verb', e:'invite'},
+  {l:'ipse', f:'ipsa, ipsum', pos:'pron', e:'himself, herself, itself, themselves'},
+  {l:'ira', f:'irae, f', pos:'noun', e:'anger'},
+  {l:'iratus', f:'irata, iratum', pos:'adj', e:'angry'},
+  {l:'is', f:'ea, id', pos:'pron', e:'this, that, he, she, it'},
+  {l:'ita', f:'indecl', pos:'adv', e:'in this way, to such an extent, so'},
+  {l:'itaque', f:'indecl', pos:'adv', e:'and so, therefore'},
+  {l:'iter', f:'itineris, n', pos:'noun', e:'journey'},
+  {l:'iterum', f:'indecl', pos:'adv', e:'again'},
+  {l:'iubeo', f:'iubere, iussi, iussus', pos:'verb', e:'order'},
+  {l:'iuvenis', f:'iuvenis, m', pos:'noun', e:'young man'},
+  {l:'labor', f:'laboris, m', pos:'noun', e:'work, toil'},
+  {l:'laboro', f:'laborare, laboravi', pos:'verb', e:'work, toil'},
+  {l:'lacrimo', f:'lacrimare, lacrimavi', pos:'verb', e:'weep, cry'},
+  {l:'laetus', f:'laeta, laetum', pos:'adj', e:'happy'},
+  {l:'laudo', f:'laudare, laudavi, laudatus', pos:'verb', e:'praise'},
+  {l:'legio', f:'legionis, f', pos:'noun', e:'legion'},
+  {l:'lego', f:'legere, legi, lectus', pos:'verb', e:'read, choose'},
+  {l:'lentus', f:'lenta, lentum', pos:'adj', e:'slow'},
+  {l:'libenter', f:'indecl', pos:'adv', e:'willingly, gladly'},
+  {l:'liber', f:'libri, m', pos:'noun', e:'book'},
+  {l:'liberi', f:'liberorum, m pl', pos:'noun', e:'children'},
+  {l:'libero', f:'liberare, liberavi, liberatus', pos:'verb', e:'set free'},
+  {l:'libertus', f:'liberti, m', pos:'noun', e:'freedman, ex-slave'},
+  {l:'locus', f:'loci, m', pos:'noun', e:'place'},
+  {l:'longus', f:'longa, longum', pos:'adj', e:'long'},
+  {l:'loquor', f:'loqui, locutus sum', pos:'verb', e:'speak, talk'},
+  {l:'lux', f:'lucis, f', pos:'noun', e:'light, daylight'},
+  {l:'magnus', f:'magna, magnum', pos:'adj', e:'big, large, great'},
+  {l:'malo', f:'malle, malui', pos:'verb', e:'prefer'},
+  {l:'malus', f:'mala, malum', pos:'adj', e:'evil, bad'},
+  {l:'maneo', f:'manere, mansi', pos:'verb', e:'remain, stay'},
+  {l:'manus', f:'manus, f', pos:'noun', e:'hand, group of people'},
+  {l:'mare', f:'maris, n', pos:'noun', e:'sea'},
+  {l:'maritus', f:'mariti, m', pos:'noun', e:'husband'},
+  {l:'mater', f:'matris, f', pos:'noun', e:'mother'},
+  {l:'maxime', f:'indecl', pos:'adv', e:'very greatly'},
+  {l:'medius', f:'media, medium', pos:'adj', e:'middle'},
+  {l:'meus', f:'mea, meum', pos:'pron', e:'my'},
+  {l:'miles', f:'militis, m', pos:'noun', e:'soldier'},
+  {l:'minime', f:'indecl', pos:'adv', e:'very little, least, no'},
+  {l:'miror', f:'mirari, miratus sum', pos:'verb', e:'wonder at, admire'},
+  {l:'miser', f:'misera, miserum', pos:'adj', e:'miserable, wretched, sad'},
+  {l:'mitto', f:'mittere, misi, missus', pos:'verb', e:'send'},
+  {l:'modus', f:'modi, m', pos:'noun', e:'manner, way, kind'},
+  {l:'moneo', f:'monere, monui, monitus', pos:'verb', e:'warn, advise'},
+  {l:'mons', f:'montis, m', pos:'noun', e:'mountain'},
+  {l:'morior', f:'mori, mortuus sum', pos:'verb', e:'die'},
+  {l:'mors', f:'mortis, f', pos:'noun', e:'death'},
+  {l:'moveo', f:'movere, movi, motus', pos:'verb', e:'move'},
+  {l:'mox', f:'indecl', pos:'adv', e:'soon'},
+  {l:'multo', f:'indecl', pos:'adv', e:'much'},
+  {l:'multus', f:'multa, multum', pos:'adj', e:'much, many'},
+  {l:'murus', f:'muri, m', pos:'noun', e:'wall'},
+  {l:'nam', f:'indecl', pos:'conj', e:'for'},
+  {l:'narro', f:'narrare, narravi, narratus', pos:'verb', e:'tell, relate'},
+  {l:'nauta', f:'nautae, m', pos:'noun', e:'sailor'},
+  {l:'navigo', f:'navigare, navigavi', pos:'verb', e:'sail'},
+  {l:'navis', f:'navis, f', pos:'noun', e:'ship'},
+  {l:'-ne', f:'indecl', pos:'other', e:'(introduces question)'},
+  {l:'ne', f:'indecl + subjunctive', pos:'conj', e:'that … not, so that … not, lest'},
+  {l:'nec / neque', f:'indecl', pos:'conj', e:'and not, nor, neither'},
+  {l:'neco', f:'necare, necavi, necatus', pos:'verb', e:'kill'},
+  {l:'nemo', f:'nullius', pos:'pron', e:'no one, nobody'},
+  {l:'nescio', f:'nescire, nescivi', pos:'verb', e:'not know'},
+  {l:'nihil', f:'indecl', pos:'other', e:'nothing'},
+  {l:'nisi', f:'indecl', pos:'conj', e:'unless, except'},
+  {l:'nolo', f:'nolle, nolui', pos:'verb', e:'not want, refuse'},
+  {l:'nomen', f:'nominis, n', pos:'noun', e:'name'},
+  {l:'non', f:'indecl', pos:'adv', e:'not'},
+  {l:'nonne…?', f:'indecl', pos:'adv', e:'surely … ?'},
+  {l:'nonnulli', f:'nonnullae, nonnulla', pos:'adj', e:'some, several'},
+  {l:'nos', f:'nostrum', pos:'pron', e:'we, us'},
+  {l:'noster', f:'nostra, nostrum', pos:'pron', e:'our'},
+  {l:'novus', f:'nova, novum', pos:'adj', e:'new'},
+  {l:'nox', f:'noctis, f', pos:'noun', e:'night'},
+  {l:'nullus', f:'nulla, nullum', pos:'adj', e:'not any, no'},
+  {l:'num', f:'indecl', pos:'other', e:'whether'},
+  {l:'num…?', f:'indecl', pos:'adv', e:'surely … not?'},
+  {l:'numquam', f:'indecl', pos:'adv', e:'never'},
+  {l:'nunc', f:'indecl', pos:'adv', e:'now'},
+  {l:'nuntio', f:'nuntiare, nuntiavi, nuntiatus', pos:'verb', e:'announce, report'},
+  {l:'nuntius', f:'nuntii, m', pos:'noun', e:'messenger, message, news'},
+  {l:'occido', f:'occidere, occidi, occisus', pos:'verb', e:'kill'},
+  {l:'offero', f:'offerre, obtuli, oblatus', pos:'verb', e:'offer'},
+  {l:'olim', f:'indecl', pos:'adv', e:'once, some time ago'},
+  {l:'omnis', f:'omne', pos:'adj', e:'all, every'},
+  {l:'opprimo', f:'opprimere, oppressi, oppressus', pos:'verb', e:'crush, overwhelm'},
+  {l:'oppugno', f:'oppugnare, oppugnavi, oppugnatus', pos:'verb', e:'attack'},
+  {l:'oro', f:'orare, oravi, oratus', pos:'verb', e:'beg'},
+  {l:'ostendo', f:'ostendere, ostendi, ostentus', pos:'verb', e:'show'},
+  {l:'paene', f:'indecl', pos:'adv', e:'almost, nearly'},
+  {l:'paro', f:'parare, paravi, paratus', pos:'verb', e:'prepare, provide'},
+  {l:'pars', f:'partis, f', pos:'noun', e:'part'},
+  {l:'parvus', f:'parva, parvum', pos:'adj', e:'small'},
+  {l:'pater', f:'patris, m', pos:'noun', e:'father'},
+  {l:'patior', f:'pati, passus sum', pos:'verb', e:'suffer, endure'},
+  {l:'patria', f:'patriae, f', pos:'noun', e:'country, homeland'},
+  {l:'pauci', f:'paucae, pauca', pos:'adj', e:'few, a few'},
+  {l:'pax', f:'pacis, f', pos:'noun', e:'peace'},
+  {l:'pecunia', f:'pecuniae, f', pos:'noun', e:'money'},
+  {l:'pello', f:'pellere, pepuli, pulsus', pos:'verb', e:'drive'},
+  {l:'per', f:'+ accusative', pos:'prep', e:'through, along'},
+  {l:'pereo', f:'perire, perii', pos:'verb', e:'die, perish'},
+  {l:'periculum', f:'periculi, n', pos:'noun', e:'danger'},
+  {l:'persuadeo', f:'persuadere, persuasi + dative', pos:'verb', e:'persuade'},
+  {l:'perterritus', f:'perterrita, perterritum', pos:'adj', e:'terrified'},
+  {l:'pes', f:'pedis, m', pos:'noun', e:'foot'},
+  {l:'peto', f:'petere, petivi, petitus', pos:'verb', e:'make for, seek, beg/ask for'},
+  {l:'poena', f:'poenae, f', pos:'noun', e:'punishment'},
+  {l:'pono', f:'ponere, posui, positus', pos:'verb', e:'put, place, set up'},
+  {l:'porta', f:'portae, f', pos:'noun', e:'gate'},
+  {l:'porto', f:'portare, portavi, portatus', pos:'verb', e:'carry, bear, take'},
+  {l:'possum', f:'posse, potui', pos:'verb', e:'can, be able'},
+  {l:'post', f:'+ accusative', pos:'prep', e:'after, behind'},
+  {l:'postea', f:'indecl', pos:'adv', e:'afterwards'},
+  {l:'postquam', f:'indecl', pos:'conj', e:'after, when'},
+  {l:'postridie', f:'indecl', pos:'adv', e:'on the next day'},
+  {l:'praemium', f:'praemii, n', pos:'noun', e:'prize, reward, profit'},
+  {l:'primo', f:'indecl', pos:'adv', e:'at first'},
+  {l:'primus', f:'prima, primum', pos:'adj', e:'first'},
+  {l:'princeps', f:'principis, m', pos:'noun', e:'chief, emperor'},
+  {l:'pro', f:'+ ablative', pos:'prep', e:'in front of, for, in return for'},
+  {l:'procedo', f:'procedere, processi', pos:'verb', e:'advance, proceed'},
+  {l:'proelium', f:'proelii, n', pos:'noun', e:'battle'},
+  {l:'proficiscor', f:'proficisci, profectus sum', pos:'verb', e:'set out'},
+  {l:'progredior', f:'progredi, progressus sum', pos:'verb', e:'advance'},
+  {l:'promitto', f:'promittere, promisi, promissus', pos:'verb', e:'promise'},
+  {l:'prope', f:'+ accusative', pos:'prep', e:'near'},
+  {l:'propter', f:'+ accusative', pos:'prep', e:'on account of, because of'},
+  {l:'proximus', f:'proxima, proximum', pos:'adj', e:'nearest, next to'},
+  {l:'puella', f:'puellae, f', pos:'noun', e:'girl'},
+  {l:'puer', f:'pueri, m', pos:'noun', e:'boy'},
+  {l:'pugno', f:'pugnare, pugnavi', pos:'verb', e:'fight'},
+  {l:'pulcher', f:'pulchra, pulchrum', pos:'adj', e:'beautiful, handsome'},
+  {l:'punio', f:'punire, punivi, punitus', pos:'verb', e:'punish'},
+  {l:'puto', f:'putare, putavi, putatus', pos:'verb', e:'think'},
+  {l:'quaero', f:'quaerere, quaesivi, quaesitus', pos:'verb', e:'search for, look for, ask'},
+  {l:'qualis?', f:'quale', pos:'adj', e:'what sort of?'},
+  {l:'quam', f:'indecl + superlative', pos:'adv', e:'as … as possible'},
+  {l:'quam', f:'indecl', pos:'adv', e:'than, how?'},
+  {l:'quamquam', f:'indecl', pos:'conj', e:'although'},
+  {l:'quando?', f:'indecl', pos:'adv', e:'when?'},
+  {l:'quantus?', f:'quanta, quantum', pos:'adj', e:'how big? how much?'},
+  {l:'-que', f:'indecl', pos:'conj', e:'and'},
+  {l:'qui', f:'quae, quod', pos:'pron', e:'who, which'},
+  {l:'quidam', f:'quaedam, quoddam', pos:'pron', e:'one, a certain, some'},
+  {l:'quis?', f:'quid?', pos:'pron', e:'who? what?'},
+  {l:'quo?', f:'indecl', pos:'adv', e:'to where?'},
+  {l:'quod', f:'indecl', pos:'conj', e:'because'},
+  {l:'quomodo?', f:'indecl', pos:'adv', e:'how?'},
+  {l:'quoque', f:'indecl', pos:'conj', e:'also, too'},
+  {l:'quot?', f:'indecl', pos:'adj', e:'how many?'},
+  {l:'rapio', f:'rapere, rapui, raptus', pos:'verb', e:'seize, grab'},
+  {l:'re-', f:'indecl', pos:'prefix', e:'back'},
+  {l:'reddo', f:'reddere, reddidi, redditus', pos:'verb', e:'give back, restore'},
+  {l:'redeo', f:'redire, redii', pos:'verb', e:'go back, come back, return'},
+  {l:'refero', f:'referre, rettuli, relatus', pos:'verb', e:'bring/carry back, report, tell'},
+  {l:'regina', f:'reginae, f', pos:'noun', e:'queen'},
+  {l:'regnum', f:'regni, n', pos:'noun', e:'kingdom'},
+  {l:'rego', f:'regere, rexi, rectus', pos:'verb', e:'rule'},
+  {l:'regredior', f:'regredi, regressus sum', pos:'verb', e:'go back, return'},
+  {l:'relinquo', f:'relinquere, reliqui, relictus', pos:'verb', e:'leave, leave behind'},
+  {l:'res', f:'rei, f', pos:'noun', e:'thing, matter, event'},
+  {l:'resisto', f:'resistere, restiti + dative', pos:'verb', e:'resist'},
+  {l:'respondeo', f:'respondere, respondi, responsus', pos:'verb', e:'reply'},
+  {l:'rex', f:'regis, m', pos:'noun', e:'king'},
+  {l:'rideo', f:'ridere, risi', pos:'verb', e:'laugh, smile'},
+  {l:'rogo', f:'rogare, rogavi, rogatus', pos:'verb', e:'ask, ask for'},
+  {l:'Roma', f:'Romae, f', pos:'noun', e:'Rome'},
+  {l:'Romanus', f:'Romana, Romanum', pos:'adj', e:'Roman'},
+  {l:'sacer', f:'sacra, sacrum', pos:'adj', e:'sacred'},
+  {l:'saepe', f:'indecl', pos:'adv', e:'often'},
+  {l:'saevus', f:'saeva, saevum', pos:'adj', e:'savage, cruel'},
+  {l:'saluto', f:'salutare, salutavi, salutatus', pos:'verb', e:'greet'},
+  {l:'sanguis', f:'sanguinis, m', pos:'noun', e:'blood'},
+  {l:'scelestus', f:'scelesta, scelestum', pos:'adj', e:'wicked'},
+  {l:'scelus', f:'sceleris, n', pos:'noun', e:'crime'},
+  {l:'scio', f:'scire, scivi, scitus', pos:'verb', e:'know'},
+  {l:'scribo', f:'scribere, scripsi, scriptus', pos:'verb', e:'write'},
+  {l:'se', f:'sui', pos:'pron', e:'himself, herself, itself, themselves'},
+  {l:'sed', f:'indecl', pos:'conj', e:'but'},
+  {l:'sedeo', f:'sedere, sedi', pos:'verb', e:'sit'},
+  {l:'semper', f:'indecl', pos:'adv', e:'always'},
+  {l:'senator', f:'senatoris, m', pos:'noun', e:'senator'},
+  {l:'senex', f:'senis, m', pos:'noun', e:'old man'},
+  {l:'sentio', f:'sentire, sensi, sensus', pos:'verb', e:'feel, notice'},
+  {l:'sequor', f:'sequi, secutus sum', pos:'verb', e:'follow'},
+  {l:'servo', f:'servare, servavi, servatus', pos:'verb', e:'save, protect, keep'},
+  {l:'servus', f:'servi, m', pos:'noun', e:'slave'},
+  {l:'si', f:'indecl', pos:'conj', e:'if'},
+  {l:'sic', f:'indecl', pos:'adv', e:'thus, in this way'},
+  {l:'silva', f:'silvae, f', pos:'noun', e:'wood'},
+  {l:'simul', f:'indecl', pos:'adv', e:'at the same time'},
+  {l:'simulac / simulatque', f:'indecl', pos:'conj', e:'as soon as'},
+  {l:'sine', f:'+ ablative', pos:'prep', e:'without'},
+  {l:'soleo', f:'solere, solitus sum', pos:'verb', e:'be accustomed'},
+  {l:'solus', f:'sola, solum', pos:'adj', e:'alone, lonely, only'},
+  {l:'specto', f:'spectare, spectavi, spectatus', pos:'verb', e:'look at, watch'},
+  {l:'spero', f:'sperare, speravi, speratus', pos:'verb', e:'hope, expect'},
+  {l:'spes', f:'spei, f', pos:'noun', e:'hope'},
+  {l:'statim', f:'indecl', pos:'adv', e:'at once, immediately'},
+  {l:'sto', f:'stare, steti', pos:'verb', e:'stand'},
+  {l:'stultus', f:'stulta, stultum', pos:'adj', e:'stupid, foolish'},
+  {l:'sub', f:'+ accusative/ablative', pos:'prep', e:'under, beneath'},
+  {l:'subito', f:'indecl', pos:'adv', e:'suddenly'},
+  {l:'sum', f:'esse, fui', pos:'verb', e:'be'},
+  {l:'summus', f:'summa, summum', pos:'adj', e:'highest, greatest, top of'},
+  {l:'supero', f:'superare, superavi, superatus', pos:'verb', e:'overcome, overpower'},
+  {l:'surgo', f:'surgere, surrexi', pos:'verb', e:'get up, stand up, rise'},
+  {l:'suus', f:'sua, suum', pos:'pron', e:'his, her, its, their (own)'},
+  {l:'taberna', f:'tabernae, f', pos:'noun', e:'shop, inn'},
+  {l:'taceo', f:'tacere, tacui, tacitus', pos:'verb', e:'be silent, be quiet'},
+  {l:'talis', f:'tale', pos:'adj', e:'such, of such a kind'},
+  {l:'tam', f:'indecl', pos:'adv', e:'so'},
+  {l:'tamen', f:'indecl', pos:'adv', e:'however'},
+  {l:'tandem', f:'indecl', pos:'adv', e:'at last, finally'},
+  {l:'tantus', f:'tanta, tantum', pos:'adj', e:'so great, such a great'},
+  {l:'tempestas', f:'tempestatis, f', pos:'noun', e:'storm'},
+  {l:'templum', f:'templi, n', pos:'noun', e:'temple'},
+  {l:'tempus', f:'temporis, n', pos:'noun', e:'time'},
+  {l:'teneo', f:'tenere, tenui, tentus', pos:'verb', e:'hold'},
+  {l:'terra', f:'terrae, f', pos:'noun', e:'ground, land, country'},
+  {l:'terreo', f:'terrere, terrui, territus', pos:'verb', e:'frighten'},
+  {l:'timeo', f:'timere, timui', pos:'verb', e:'fear, be afraid'},
+  {l:'tollo', f:'tollere, sustuli, sublatus', pos:'verb', e:'raise, lift up, hold up'},
+  {l:'tot', f:'indecl', pos:'adj', e:'so many'},
+  {l:'totus', f:'tota, totum', pos:'adj', e:'whole'},
+  {l:'trado', f:'tradere, tradidi, traditus', pos:'verb', e:'hand over, hand down'},
+  {l:'traho', f:'trahere, traxi, tractus', pos:'verb', e:'drag'},
+  {l:'trans', f:'+ accusative', pos:'prep', e:'across'},
+  {l:'tristis', f:'triste', pos:'adj', e:'sad'},
+  {l:'tu', f:'tui', pos:'pron', e:'you (singular)'},
+  {l:'tum', f:'indecl', pos:'adv', e:'then'},
+  {l:'turba', f:'turbae, f', pos:'noun', e:'crowd'},
+  {l:'tuus', f:'tua, tuum', pos:'pron', e:'your (singular), yours'},
+  {l:'ubi', f:'indecl', pos:'adv', e:'where? where, when'},
+  {l:'umquam', f:'indecl', pos:'adv', e:'ever'},
+  {l:'unde?', f:'indecl', pos:'adv', e:'from where?'},
+  {l:'urbs', f:'urbis, f', pos:'noun', e:'city'},
+  {l:'ut', f:'indecl + subjunctive', pos:'conj', e:'that, so that, in order that'},
+  {l:'ut', f:'indecl + indicative', pos:'conj', e:'as, when'},
+  {l:'uxor', f:'uxoris, f', pos:'noun', e:'wife'},
+  {l:'validus', f:'valida, validum', pos:'adj', e:'strong'},
+  {l:'vehementer', f:'indecl', pos:'adv', e:'violently, loudly'},
+  {l:'vendo', f:'vendere, vendidi, venditus', pos:'verb', e:'sell'},
+  {l:'venio', f:'venire, veni', pos:'verb', e:'come'},
+  {l:'verbum', f:'verbi, n', pos:'noun', e:'word'},
+  {l:'verto', f:'vertere, verti, versus', pos:'verb', e:'turn'},
+  {l:'vester', f:'vestra, vestrum', pos:'pron', e:'your (plural), yours'},
+  {l:'via', f:'viae, f', pos:'noun', e:'street, road, way'},
+  {l:'victoria', f:'victoriae, f', pos:'noun', e:'victory'},
+  {l:'video', f:'videre, vidi, visus', pos:'verb', e:'see'},
+  {l:'videor', f:'videri, visus sum', pos:'verb', e:'seem, appear'},
+  {l:'villa', f:'villae, f', pos:'noun', e:'house, country villa'},
+  {l:'vinco', f:'vincere, vici, victus', pos:'verb', e:'conquer, win, be victorious'},
+  {l:'vinum', f:'vini, n', pos:'noun', e:'wine'},
+  {l:'vir', f:'viri, m', pos:'noun', e:'man'},
+  {l:'virtus', f:'virtutis, f', pos:'noun', e:'courage, virtue'},
+  {l:'vita', f:'vitae, f', pos:'noun', e:'life'},
+  {l:'vivo', f:'vivere, vixi', pos:'verb', e:'live, be alive'},
+  {l:'voco', f:'vocare, vocavi, vocatus', pos:'verb', e:'call'},
+  {l:'volo', f:'velle, volui', pos:'verb', e:'want, wish, be willing'},
+  {l:'vos', f:'vestrum', pos:'pron', e:'you (plural)'},
+  {l:'vox', f:'vocis, f', pos:'noun', e:'voice, shout'},
+  {l:'vulnero', f:'vulnerare, vulneravi, vulneratus', pos:'verb', e:'wound, injure'},
+  {l:'vulnus', f:'vulneris, n', pos:'noun', e:'wound'},
+];
+
+// ════════════════════════════════════════════════════════
+//  PERSISTENCE — localStorage (survives sessions on iOS)
+// ════════════════════════════════════════════════════════
+const STORAGE_KEY = 'lingua_v2';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+  } catch(e) {
+    // storage full — try clearing old keys
+    console.warn('Storage save failed:', e);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  BOX CONFIG
+// ════════════════════════════════════════════════════════
+const BOX_CONFIG = [
+  {id:1, name:"New",      interval:1 },
+  {id:2, name:"Learning", interval:2 },
+  {id:3, name:"Familiar", interval:4 },
+  {id:4, name:"Strong",   interval:8 },
+  {id:5, name:"Mastered", interval:16},
+];
+const BOX_COLORS = ['','var(--box1)','var(--box2)','var(--box3)','var(--box4)','var(--box5)'];
+
+// ════════════════════════════════════════════════════════
+//  STATE INIT — merges saved progress with word bank
+// ════════════════════════════════════════════════════════
+function initState() {
+  const saved = loadState();
+  const today = todayStr();
+
+  // Build lookup of saved word progress by latin headword
+  const savedMap = {};
+  if (saved && saved.words) {
+    saved.words.forEach(w => { savedMap[w.l] = w; });
+  }
+
+  const words = WORDBANK.map(w => {
+    const s = savedMap[w.l];
+    return {
+      l: w.l, f: w.f, pos: w.pos, e: w.e,
+      box:        s ? s.box        : 1,
+      nextReview: s ? s.nextReview : today,
+      lastSeen:   s ? s.lastSeen   : null,
+    };
+  });
+
+  return {
+    words,
+    sessions:  saved ? (saved.sessions  || 0) : 0,
+    lastSession: saved ? (saved.lastSession || null) : null,
+  };
+}
+
+let STATE = initState();
+
+// ════════════════════════════════════════════════════════
+//  DATE HELPERS
+// ════════════════════════════════════════════════════════
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function addDays(d, n) {
+  const dt = new Date(d); dt.setDate(dt.getDate()+n);
+  return dt.toISOString().split('T')[0];
+}
+function daysDiff(a, b) { return Math.round((new Date(b)-new Date(a))/86400000); }
+
+// ════════════════════════════════════════════════════════
+//  LEITNER LOGIC
+// ════════════════════════════════════════════════════════
+function dueWords(boxId) {
+  const today = todayStr();
+  return STATE.words.filter(w => w.box === boxId && w.nextReview <= today);
+}
+function allDueWords() {
+  const today = todayStr();
+  return STATE.words.filter(w => w.nextReview <= today);
+}
+function promoteWord(word) {
+  const nb = Math.min(word.box+1, 5);
+  word.box = nb;
+  word.nextReview = addDays(todayStr(), BOX_CONFIG[nb-1].interval);
+  word.lastSeen = todayStr();
+}
+function demoteWord(word) {
+  word.box = 1;
+  word.nextReview = todayStr();
+  word.lastSeen = todayStr();
+}
+
+// ════════════════════════════════════════════════════════
+//  SCREEN ROUTER
+// ════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const map = {home:0,'study-screen':1,'complete-screen':1,'browse-screen':2};
+  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', i===map[id]));
+  if (id==='home') updateHome();
+  if (id==='browse-screen') renderBrowse();
+}
+
+// ════════════════════════════════════════════════════════
+//  HOME / OVERVIEW
+// ════════════════════════════════════════════════════════
+let selectedBoxFilter = null;
+
+function updateHome() {
+  const today = todayStr();
+  const total = STATE.words.length;
+  const counts = [0,0,0,0,0];
+  STATE.words.forEach(w => counts[w.box-1]++);
+
+  // mastery bar
+  counts.forEach((c,i) => {
+    document.getElementById(`seg${i+1}`).style.width = `${(c/total)*100}%`;
+  });
+  document.getElementById('mastery-pct').textContent = Math.round((counts[4]/total)*100)+'%';
+
+  // stats
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-mastered').textContent = counts[4];
+  document.getElementById('stat-due').textContent = allDueWords().length;
+  document.getElementById('stat-sessions').textContent = STATE.sessions;
+
+  // box cards
+  const grid = document.getElementById('boxes-grid');
+  grid.innerHTML = '';
+  BOX_CONFIG.forEach(bc => {
+    const inBox = STATE.words.filter(w => w.box === bc.id);
+    const due = dueWords(bc.id).length;
+    let badge = '';
+    if (due > 0) {
+      badge = `<div class="box-due-badge due-now">${due} due</div>`;
+    } else {
+      const next = inBox.map(w=>w.nextReview).filter(d=>d>today).sort()[0];
+      if (next) {
+        const dd = daysDiff(today, next);
+        badge = `<div class="box-due-badge ${dd<=3?'due-soon':'due-later'}">in ${dd}d</div>`;
+      } else {
+        badge = `<div class="box-due-badge due-later">—</div>`;
+      }
+    }
+    const sel = selectedBoxFilter === bc.id ? ' selected' : '';
+    grid.innerHTML += `<div class="box-card${sel}" data-box="${bc.id}" onclick="selectBox(${bc.id})">
+      <div class="box-label">${bc.id}</div>
+      <div class="box-name">${bc.name}</div>
+      <div class="box-count">${inBox.length}</div>
+      <div class="box-count-label">words</div>
+      ${badge}
+    </div>`;
+  });
+
+  // schedule
+  const rows = document.getElementById('schedule-rows');
+  rows.innerHTML = '';
+  BOX_CONFIG.forEach(bc => {
+    const inBox = STATE.words.filter(w => w.box === bc.id);
+    if (!inBox.length) return;
+    const due = dueWords(bc.id).length;
+    const future = inBox.map(w=>w.nextReview).filter(d=>d>today).sort()[0];
+    let dateLabel = due>0 ? '<span style="color:var(--box1)">Now</span>' : (future||'—');
+    let countLabel = due>0 ? `${due} word${due>1?'s':''} due`
+                           : (future ? `in ${daysDiff(today,future)} day${daysDiff(today,future)!==1?'s':''}` : '');
+    rows.innerHTML += `<div class="schedule-row">
+      <div class="schedule-row-left">
+        <div class="box-indicator" style="background:${BOX_COLORS[bc.id]}"></div>
+        <div>
+          <div class="schedule-box-name">Box ${bc.id} · ${bc.name}</div>
+          <div class="schedule-interval">every ${bc.interval} day${bc.interval>1?'s':''}</div>
+        </div>
+      </div>
+      <div class="schedule-next-date">${dateLabel}<span class="countdown">${countLabel}</span></div>
+    </div>`;
+  });
+}
+
+function selectBox(id) {
+  selectedBoxFilter = selectedBoxFilter===id ? null : id;
+  updateHome();
+}
+
+// ════════════════════════════════════════════════════════
+//  STUDY SESSION
+// ════════════════════════════════════════════════════════
+let sessionWords=[], sessionIndex=0, sessCorrect=0, sessWrong=0;
+let studyMode='flashcard', cardFlipped=false;
+
+function startStudy(mode) {
+  studyMode = document.getElementById('mode-select').value;
+  let pool;
+  if (mode==='all') {
+    pool = shuffle([...STATE.words]).slice(0,40);
+  } else if (selectedBoxFilter!==null) {
+    pool = dueWords(selectedBoxFilter);
+    if (!pool.length) pool = STATE.words.filter(w=>w.box===selectedBoxFilter).slice(0,30);
+  } else {
+    pool = allDueWords();
+    if (!pool.length) pool = STATE.words.filter(w=>w.box===1);
+    if (!pool.length) pool = [...STATE.words];
+    shuffle(pool);
+    pool = pool.slice(0,30);
+  }
+  if (!pool.length) { alert('No words to study!'); return; }
+  shuffle(pool);
+  sessionWords=pool; sessionIndex=0; sessCorrect=0; sessWrong=0;
+  showScreen('study-screen');
+  updateStudyUI();
+  renderCurrentCard();
+}
+
+function renderCurrentCard() {
+  const isMC = studyMode.startsWith('mc');
+  const isRev = studyMode.endsWith('-rev');
+  document.getElementById('fc-mode').style.display = isMC ? 'none' : 'block';
+  document.getElementById('mc-mode').style.display = isMC ? 'block' : 'none';
+  isMC ? renderMC(sessionWords[sessionIndex], isRev) : renderFC(sessionWords[sessionIndex], isRev);
+}
+
+function renderFC(word, rev) {
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped'); cardFlipped=false;
+  document.getElementById('card-box-ind').textContent = `Box ${word.box}`;
+  document.getElementById('card-box-ind-back').textContent = `Box ${word.box}`;
+  if (!rev) {
+    document.getElementById('card-pos-front').textContent = word.pos.toUpperCase();
+    const frontMain = document.getElementById('card-front-main');
+    frontMain.style.fontStyle='italic'; frontMain.style.fontSize='38px';
+    frontMain.textContent = word.l;
+    document.getElementById('card-front-hint').textContent = word.f !== 'indecl' ? word.f : '';
+    document.getElementById('card-pos-back').textContent = '';
+    document.getElementById('card-back-main').textContent = word.e;
+    document.getElementById('card-back-extra').textContent = word.f;
+  } else {
+    document.getElementById('card-pos-front').textContent = 'ENGLISH → LATIN';
+    const frontMain = document.getElementById('card-front-main');
+    frontMain.style.fontStyle='normal'; frontMain.style.fontSize='28px';
+    frontMain.textContent = word.e.split(',')[0];
+    document.getElementById('card-front-hint').textContent = `(${word.pos})`;
+    document.getElementById('card-pos-back').textContent = word.pos.toUpperCase();
+    document.getElementById('card-back-main').textContent = word.l;
+    document.getElementById('card-back-extra').textContent = word.f;
+  }
+  document.getElementById('answer-btns').style.display='none';
+  document.getElementById('flip-prompt').style.display='block';
+}
+
+function flipCard() {
+  if (cardFlipped) return;
+  document.getElementById('flashcard').classList.add('flipped');
+  cardFlipped=true;
+  document.getElementById('answer-btns').style.display='grid';
+  document.getElementById('flip-prompt').style.display='none';
+}
+
+function answerCard(correct) {
+  const word = sessionWords[sessionIndex];
+  if (correct) { promoteWord(word); sessCorrect++; document.getElementById('flashcard-wrap').classList.add('flash-correct'); setTimeout(()=>document.getElementById('flashcard-wrap').classList.remove('flash-correct'),400); }
+  else         { demoteWord(word);  sessWrong++;   document.getElementById('flashcard-wrap').classList.add('flash-wrong');   setTimeout(()=>document.getElementById('flashcard-wrap').classList.remove('flash-wrong'),400); }
+  saveState();
+  nextCard();
+}
+
+function renderMC(word, rev) {
+  const q = rev ? word.e.split(',')[0] : word.l;
+  document.getElementById('mc-pos').textContent = rev ? 'ENGLISH → LATIN' : word.pos.toUpperCase();
+  const qEl = document.getElementById('mc-question');
+  qEl.textContent = q;
+  qEl.style.fontStyle = rev ? 'normal' : 'italic';
+  qEl.style.fontSize = rev ? '26px' : '34px';
+
+  const correct = rev ? word.l : word.e.split(',')[0];
+  const pool = STATE.words.filter(w=>w.l!==word.l && w.pos===word.pos);
+  const distractors = shuffle([...pool]).slice(0,3).map(w=> rev ? w.l : w.e.split(',')[0]);
+  while(distractors.length<3) {
+    const r=STATE.words[Math.floor(Math.random()*STATE.words.length)];
+    const v=rev?r.l:r.e.split(',')[0];
+    if(v!==correct&&!distractors.includes(v)) distractors.push(v);
+  }
+  const opts=shuffle([correct,...distractors]);
+  const container=document.getElementById('mc-options');
+  container.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='mc-option'; btn.textContent=opt;
+    btn.onclick=()=>handleMC(btn, opt===correct, word);
+    container.appendChild(btn);
+  });
+}
+
+function handleMC(btn, correct, word) {
+  document.querySelectorAll('.mc-option').forEach(b=>{
+    b.disabled=true;
+    const isCorrectAnswer = studyMode.endsWith('-rev')
+      ? b.textContent===word.l
+      : b.textContent===word.e.split(',')[0];
+    if(b===btn) b.classList.add(correct?'correct':'wrong');
+    if(!correct&&isCorrectAnswer) b.classList.add('correct');
+  });
+  if(correct){promoteWord(word);sessCorrect++;}
+  else{demoteWord(word);sessWrong++;}
+  saveState();
+  setTimeout(()=>nextCard(), 950);
+}
+
+function nextCard() {
+  sessionIndex++;
+  updateStudyUI();
+  if(sessionIndex>=sessionWords.length) { endSession(); return; }
+  renderCurrentCard();
+}
+
+function updateStudyUI() {
+  const total=sessionWords.length, cur=Math.min(sessionIndex+1,total);
+  document.getElementById('study-progress-label').textContent=`${cur} / ${total}`;
+  document.getElementById('study-prog-fill').style.width=`${(sessionIndex/total)*100}%`;
+  document.getElementById('sess-correct').textContent=sessCorrect;
+  document.getElementById('sess-wrong').textContent=sessWrong;
+}
+
+function endSession() {
+  STATE.sessions++; STATE.lastSession=todayStr(); saveState();
+  const total=sessCorrect+sessWrong, pct=total?Math.round(sessCorrect/total*100):0;
+  document.getElementById('comp-correct').textContent=sessCorrect;
+  document.getElementById('comp-wrong').textContent=sessWrong;
+  document.getElementById('comp-pct').textContent=pct+'%';
+  const grades=[[90,'Optime!','Outstanding.'],[70,'Bene factum!','Well done.'],[50,'Satis bene.','Keep going.'],[0,'Noli desistere.','Never give up.']];
+  for(const[t,h,s]of grades){if(pct>=t){document.getElementById('complete-heading').textContent=h;document.getElementById('complete-subtitle').textContent=s;break;}}
+  showScreen('complete-screen');
+}
+
+function exitStudy() { showScreen('home'); }
+
+// ════════════════════════════════════════════════════════
+//  BROWSE
+// ════════════════════════════════════════════════════════
+function renderBrowse() {
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  const fb=document.getElementById('filter-box').value;
+  const fp=document.getElementById('filter-pos').value;
+  const words=STATE.words.filter(w=>{
+    if(fb!=='all'&&w.box!==parseInt(fb)) return false;
+    if(fp!=='all'&&w.pos!==fp) return false;
+    if(q) return w.l.toLowerCase().includes(q)||w.e.toLowerCase().includes(q);
+    return true;
+  });
+  const tbody=document.getElementById('browse-tbody');
+  if(!words.length){tbody.innerHTML=`<tr><td colspan="5" class="empty-state">No words found</td></tr>`;return;}
+  tbody.innerHTML=words.map(w=>`
+    <tr>
+      <td class="word-latin-cell">${w.l}</td>
+      <td class="word-english-cell">${w.e}</td>
+      <td class="word-pos-cell">${w.pos}</td>
+      <td><span class="box-pip" style="background:${BOX_COLORS[w.box]}"></span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)">${w.box}</span></td>
+      <td><button class="reset-word-btn" onclick="resetWord('${w.l.replace(/'/g,"\\'")}')">reset</button></td>
+    </tr>`).join('');
+}
+
+function resetWord(latin) {
+  const w=STATE.words.find(x=>x.l===latin);
+  if(w){w.box=1;w.nextReview=todayStr();saveState();renderBrowse();updateHome();}
+}
+
+// ════════════════════════════════════════════════════════
+//  INSTALL BANNER (iOS only, shown once)
+// ════════════════════════════════════════════════════════
+function showInstallBanner() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const dismissed = localStorage.getItem('lingua_install_dismissed');
+  if (isIOS && !isStandalone && !dismissed) {
+    document.getElementById('install-banner').style.display = 'flex';
+  }
+}
+
+function dismissInstallBanner() {
+  document.getElementById('install-banner').style.display = 'none';
+  localStorage.setItem('lingua_install_dismissed', '1');
+}
+
+// ════════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════════
+function shuffle(a) {
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════
+updateHome();
+showInstallBanner();
+</script>
+</body>
+</html>
