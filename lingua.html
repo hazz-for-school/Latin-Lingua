@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +7,7 @@
 <title>Lingua — Latin Mastery</title>
 
 <!-- PWA / iOS home screen -->
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Lingua">
@@ -13,9 +15,11 @@
 <meta name="theme-color" content="#c9a84c">
 
 <!-- Inline manifest as data URI so it works from a single file -->
+
 <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Lingua%20%E2%80%93%20Latin%20Mastery%22%2C%22short_name%22%3A%22Lingua%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230e0c0a%22%2C%22theme_color%22%3A%22%23c9a84c%22%7D">
 
 <!-- iOS splash / icon (SVG inline as data URI) -->
+
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%230e0c0a'/%3E%3Ctext x='90' y='128' font-size='110' text-anchor='middle' fill='%23c9a84c' font-family='Georgia%2C serif'%3EL%3C/text%3E%3C/svg%3E">
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -413,17 +417,20 @@ body {
   .word-table th:last-child, .word-table td:last-child { display: none; }
 }
 </style>
+
 </head>
 <body>
 <div class="app">
 
   <!-- HEADER -->
+
   <header class="site-header">
     <div class="logo">Lingua</div>
     <div class="logo-sub">OCR Latin · Vocabulary Mastery</div>
   </header>
 
   <!-- NAV -->
+
   <nav class="nav-tabs">
     <button class="nav-tab active" onclick="showScreen('home')">Overview</button>
     <button class="nav-tab" onclick="showScreen('study-screen')">Study</button>
@@ -431,60 +438,65 @@ body {
   </nav>
 
   <!-- ══ HOME ══ -->
+
   <div id="home" class="screen active">
 
-    <div id="install-banner" class="install-banner" style="display:none">
-      <div class="install-banner-icon">📱</div>
-      <div class="install-banner-text">
-        <div class="install-banner-title">Add to Home Screen</div>
-        <div class="install-banner-desc">Tap the share button <strong>⎙</strong> then <strong>"Add to Home Screen"</strong> to use Lingua as an app. Your progress saves automatically.</div>
-      </div>
-      <button class="install-banner-close" onclick="dismissInstallBanner()">✕</button>
-    </div>
+```
+<div id="install-banner" class="install-banner" style="display:none">
+  <div class="install-banner-icon">📱</div>
+  <div class="install-banner-text">
+    <div class="install-banner-title">Add to Home Screen</div>
+    <div class="install-banner-desc">Tap the share button <strong>⎙</strong> then <strong>"Add to Home Screen"</strong> to use Lingua as an app. Your progress saves automatically.</div>
+  </div>
+  <button class="install-banner-close" onclick="dismissInstallBanner()">✕</button>
+</div>
 
-    <div class="mastery-bar-wrap">
-      <div class="mastery-label"><span>Mastery</span><span id="mastery-pct">0%</span></div>
-      <div class="mastery-bar" id="mastery-bar">
-        <div class="mastery-segment" style="background:var(--box1);width:0%" id="seg1"></div>
-        <div class="mastery-segment" style="background:var(--box2);width:0%" id="seg2"></div>
-        <div class="mastery-segment" style="background:var(--box3);width:0%" id="seg3"></div>
-        <div class="mastery-segment" style="background:var(--box4);width:0%" id="seg4"></div>
-        <div class="mastery-segment" style="background:var(--box5);width:0%" id="seg5"></div>
-      </div>
-    </div>
+<div class="mastery-bar-wrap">
+  <div class="mastery-label"><span>Mastery</span><span id="mastery-pct">0%</span></div>
+  <div class="mastery-bar" id="mastery-bar">
+    <div class="mastery-segment" style="background:var(--box1);width:0%" id="seg1"></div>
+    <div class="mastery-segment" style="background:var(--box2);width:0%" id="seg2"></div>
+    <div class="mastery-segment" style="background:var(--box3);width:0%" id="seg3"></div>
+    <div class="mastery-segment" style="background:var(--box4);width:0%" id="seg4"></div>
+    <div class="mastery-segment" style="background:var(--box5);width:0%" id="seg5"></div>
+  </div>
+</div>
 
-    <div class="boxes-grid" id="boxes-grid"></div>
+<div class="boxes-grid" id="boxes-grid"></div>
 
-    <div class="study-controls">
-      <select class="study-mode-select" id="mode-select">
-        <option value="flashcard">Flashcard — Latin → English</option>
-        <option value="flashcard-rev">Flashcard — English → Latin</option>
-        <option value="mc">Multiple choice — Latin → English</option>
-        <option value="mc-rev">Multiple choice — English → Latin</option>
-      </select>
-      <button class="btn-primary" onclick="startStudy()">Study Now</button>
-      <button class="btn-secondary" onclick="startStudy('all')">All Words</button>
-    </div>
+<div class="study-controls">
+  <select class="study-mode-select" id="mode-select">
+    <option value="flashcard">Flashcard — Latin → English</option>
+    <option value="flashcard-rev">Flashcard — English → Latin</option>
+    <option value="mc">Multiple choice — Latin → English</option>
+    <option value="mc-rev">Multiple choice — English → Latin</option>
+  </select>
+  <button class="btn-primary" onclick="startStudy()">Study Now</button>
+  <button class="btn-secondary" onclick="startStudy('all')">All Words</button>
+</div>
 
-    <div class="schedule-section">
-      <div class="section-title">Review Schedule</div>
-      <div class="schedule-rows" id="schedule-rows"></div>
-    </div>
+<div class="schedule-section">
+  <div class="section-title">Review Schedule</div>
+  <div class="schedule-rows" id="schedule-rows"></div>
+</div>
 
-    <div class="ornament">✦ · · ✦ · · ✦</div>
+<div class="ornament">✦ · · ✦ · · ✦</div>
 
-    <div class="schedule-section">
-      <div class="section-title">Stats</div>
-      <div style="display:flex;gap:24px;flex-wrap:wrap;">
-        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--gold)" id="stat-total">0</span><br><span style="font-size:12px;color:var(--muted)">Total words</span></div>
-        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--green-latin)" id="stat-mastered">0</span><br><span style="font-size:12px;color:var(--muted)">Mastered</span></div>
-        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--box1)" id="stat-due">0</span><br><span style="font-size:12px;color:var(--muted)">Due now</span></div>
-        <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--text-dim)" id="stat-sessions">0</span><br><span style="font-size:12px;color:var(--muted)">Sessions</span></div>
-      </div>
-    </div>
+<div class="schedule-section">
+  <div class="section-title">Stats</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;">
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--gold)" id="stat-total">0</span><br><span style="font-size:12px;color:var(--muted)">Total words</span></div>
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--green-latin)" id="stat-mastered">0</span><br><span style="font-size:12px;color:var(--muted)">Mastered</span></div>
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--box1)" id="stat-due">0</span><br><span style="font-size:12px;color:var(--muted)">Due now</span></div>
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--text-dim)" id="stat-sessions">0</span><br><span style="font-size:12px;color:var(--muted)">Sessions</span></div>
+  </div>
+</div>
+```
+
   </div>
 
   <!-- ══ STUDY ══ -->
+
   <div id="study-screen" class="screen">
     <div class="study-top-bar">
       <button class="btn-secondary" style="padding:6px 12px;font-size:13px" onclick="exitStudy()">← Back</button>
@@ -498,43 +510,47 @@ body {
       <div class="study-progress-bar-fill" id="study-prog-fill" style="width:0%"></div>
     </div>
 
-    <!-- Flashcard -->
-    <div id="fc-mode">
-      <div class="flashcard-wrap" id="flashcard-wrap">
-        <div class="flashcard" id="flashcard" onclick="flipCard()">
-          <div class="card-face front">
-            <div class="card-box-indicator" id="card-box-ind">Box 1</div>
-            <div class="card-part-of-speech" id="card-pos-front"></div>
-            <div class="card-latin" id="card-front-main"></div>
-            <div class="card-hint" id="card-front-hint"></div>
-            <div class="card-flip-hint">tap to reveal →</div>
-          </div>
-          <div class="card-face back">
-            <div class="card-box-indicator" id="card-box-ind-back">Box 1</div>
-            <div class="card-part-of-speech" id="card-pos-back"></div>
-            <div class="card-translation" id="card-back-main"></div>
-            <div class="card-extra" id="card-back-extra"></div>
-          </div>
-        </div>
+```
+<!-- Flashcard -->
+<div id="fc-mode">
+  <div class="flashcard-wrap" id="flashcard-wrap">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="card-face front">
+        <div class="card-box-indicator" id="card-box-ind">Box 1</div>
+        <div class="card-part-of-speech" id="card-pos-front"></div>
+        <div class="card-latin" id="card-front-main"></div>
+        <div class="card-hint" id="card-front-hint"></div>
+        <div class="card-flip-hint">tap to reveal →</div>
       </div>
-      <div class="answer-buttons" id="answer-btns" style="display:none">
-        <button class="btn-wrong" onclick="answerCard(false)">✗ &nbsp; Didn't know</button>
-        <button class="btn-correct" onclick="answerCard(true)">✓ &nbsp; Got it</button>
+      <div class="card-face back">
+        <div class="card-box-indicator" id="card-box-ind-back">Box 1</div>
+        <div class="card-part-of-speech" id="card-pos-back"></div>
+        <div class="card-translation" id="card-back-main"></div>
+        <div class="card-extra" id="card-back-extra"></div>
       </div>
-      <div class="flip-prompt" id="flip-prompt">Tap card to reveal translation</div>
     </div>
+  </div>
+  <div class="answer-buttons" id="answer-btns" style="display:none">
+    <button class="btn-wrong" onclick="answerCard(false)">✗ &nbsp; Didn't know</button>
+    <button class="btn-correct" onclick="answerCard(true)">✓ &nbsp; Got it</button>
+  </div>
+  <div class="flip-prompt" id="flip-prompt">Tap card to reveal translation</div>
+</div>
 
-    <!-- MC -->
-    <div id="mc-mode" style="display:none">
-      <div style="text-align:center;margin-bottom:20px">
-        <div class="card-part-of-speech" id="mc-pos" style="margin-bottom:6px"></div>
-        <div class="card-latin" id="mc-question" style="font-size:34px"></div>
-      </div>
-      <div class="mc-options" id="mc-options"></div>
-    </div>
+<!-- MC -->
+<div id="mc-mode" style="display:none">
+  <div style="text-align:center;margin-bottom:20px">
+    <div class="card-part-of-speech" id="mc-pos" style="margin-bottom:6px"></div>
+    <div class="card-latin" id="mc-question" style="font-size:34px"></div>
+  </div>
+  <div class="mc-options" id="mc-options"></div>
+</div>
+```
+
   </div>
 
   <!-- ══ COMPLETE ══ -->
+
   <div id="complete-screen" class="screen">
     <div class="complete-title" id="complete-heading">Bene factum!</div>
     <div class="complete-latin" id="complete-subtitle">Session complete</div>
@@ -550,6 +566,7 @@ body {
   </div>
 
   <!-- ══ BROWSE ══ -->
+
   <div id="browse-screen" class="screen">
     <div class="browse-controls">
       <input class="search-input" id="search-input" placeholder="Search Latin or English…" oninput="renderBrowse()">
@@ -1347,7 +1364,13 @@ function nextCard() {
   sessionIndex++;
   updateStudyUI();
   if(sessionIndex>=sessionWords.length) { endSession(); return; }
-  renderCurrentCard();
+  // Unflip first, then render new content after transition completes
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+  cardFlipped = false;
+  document.getElementById('answer-btns').style.display = 'none';
+  document.getElementById('flip-prompt').style.display = 'block';
+  setTimeout(() => renderCurrentCard(), 560);
 }
 
 function updateStudyUI() {
@@ -1432,5 +1455,6 @@ function shuffle(a) {
 updateHome();
 showInstallBanner();
 </script>
+
 </body>
 </html>
