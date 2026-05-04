@@ -1047,6 +1047,49 @@ const WORDBANK = [
   {l:'vulnus', f:'vulneris, n', pos:'noun', e:'wound'},
 ];
 
+// Frequency weighting for weighted random study picks.
+// Scale: 1 (rare in set texts) → 10 (very common in OCR GCSE reading passages).
+const POS_BASE_FREQUENCY = {
+  conj: 7,
+  prep: 7,
+  pron: 7,
+  adv: 5,
+  verb: 4,
+  noun: 3,
+  adj: 3,
+  num: 2,
+  other: 3,
+  prefix: 1
+};
+
+const HIGH_FREQUENCY_WORDS = new Set([
+  'et','sed','non','sum','in','ad','cum','ut','qui','is','hic','ille','ego','tu','nos','vos',
+  'hic','ubi','nunc','iam','tum','ita','itaque','si','nam','enim','post','per','de','ex','ab',
+  'eo','venio','video','facio','dico','habeo','do','possum','volo'
+]);
+
+const MID_FREQUENCY_WORDS = new Set([
+  'amo','audio','duco','mitto','quaero','rogo','scio','scribo','timeo','venio','voco','vivo',
+  'puer','puella','vir','femina','domus','dies','nomen','res','tempus','via','urbs','Roma',
+  'magnus','bonus','malus','primus','totus','multus','novus','saepe','semper','tamen','hodie',
+  'heri','cras','iterum','postea','contra','inter','pro','sine'
+]);
+
+function baseLemma(latin) {
+  return latin.split(/[ ,;/…!?().]+/).find(Boolean) || latin;
+}
+
+function inferFrequency(word) {
+  const lemma = baseLemma(word.l).toLowerCase();
+  if (HIGH_FREQUENCY_WORDS.has(lemma)) return 10;
+  if (MID_FREQUENCY_WORDS.has(lemma)) return 7;
+  return POS_BASE_FREQUENCY[word.pos] || 3;
+}
+
+WORDBANK.forEach(word => {
+  word.freq = inferFrequency(word);
+});
+
 // ════════════════════════════════════════════════════════
 //  PERSISTENCE — localStorage (survives sessions on iOS)
 // ════════════════════════════════════════════════════════
@@ -1096,7 +1139,7 @@ function initState() {
   const words = WORDBANK.map(w => {
     const s = savedMap[w.l];
     return {
-      l: w.l, f: w.f, pos: w.pos, e: w.e,
+      l: w.l, f: w.f, pos: w.pos, e: w.e, freq: w.freq || 1,
       box:        s ? s.box        : 1,
       nextReview: s ? s.nextReview : today,
       lastSeen:   s ? s.lastSeen   : null,
@@ -1247,16 +1290,18 @@ function startStudy(mode) {
   studyMode = document.getElementById('mode-select').value;
   let pool;
   if (mode==='all') {
-    pool = shuffle([...STATE.words]).slice(0,40);
+    pool = weightedSampleWithoutReplacement(STATE.words, 40);
   } else if (selectedBoxFilter!==null) {
     pool = dueWords(selectedBoxFilter);
-    if (!pool.length) pool = STATE.words.filter(w=>w.box===selectedBoxFilter).slice(0,30);
+    if (!pool.length) {
+      const boxWords = STATE.words.filter(w=>w.box===selectedBoxFilter);
+      pool = weightedSampleWithoutReplacement(boxWords, 30);
+    }
   } else {
     pool = allDueWords();
     if (!pool.length) pool = STATE.words.filter(w=>w.box===1);
     if (!pool.length) pool = [...STATE.words];
-    shuffle(pool);
-    pool = pool.slice(0,30);
+    pool = weightedSampleWithoutReplacement(pool, 30);
   }
   if (!pool.length) { alert('No words to study!'); return; }
   shuffle(pool);
@@ -1447,6 +1492,27 @@ function dismissInstallBanner() {
 function shuffle(a) {
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
+}
+
+function weightedSampleWithoutReplacement(words, count) {
+  const source = [...words];
+  const result = [];
+  const target = Math.min(count, source.length);
+  while (result.length < target && source.length) {
+    const totalWeight = source.reduce((sum, w) => sum + Math.max(1, w.freq || 1), 0);
+    let roll = Math.random() * totalWeight;
+    let pickedIndex = 0;
+    for (let i = 0; i < source.length; i++) {
+      roll -= Math.max(1, source[i].freq || 1);
+      if (roll <= 0) {
+        pickedIndex = i;
+        break;
+      }
+    }
+    result.push(source[pickedIndex]);
+    source.splice(pickedIndex, 1);
+  }
+  return result;
 }
 
 // ════════════════════════════════════════════════════════
